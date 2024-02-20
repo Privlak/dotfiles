@@ -18,6 +18,6 @@ fi
 
 # Run Ansible playbook with sudo privileges
 ansible-playbook $PLAYBOOK_FILE --ask-become-pass
-
 echo "Setup completed successfully. Log file: $LOG_FILE"
+
 exit 0

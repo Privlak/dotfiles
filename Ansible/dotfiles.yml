@@ -21,7 +21,6 @@
         - libreoffice
         - virtualbox
         - vlc
-        - google-chrome-stable
 
     - name: Add Google Chrome repository key
       apt_key:
