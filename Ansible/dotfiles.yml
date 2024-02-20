@@ -2,7 +2,7 @@
   hosts: localhost
   become: yes
   vars:
-    dotfiles_repo: "https://github.com/Privlak/Dotfiles.git"
+    dotfiles_repo: "https://github.com/Privlak/dotfiles.git"
     dotfiles_dir: "~/dotfiles"
     oh_my_posh_theme_url: "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/atomic.omp.json"
     log_file: "~/setup_errors.log"
