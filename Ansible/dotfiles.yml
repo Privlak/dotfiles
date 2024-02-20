@@ -8,13 +8,6 @@
     log_file: "~/setup_errors.log"
 
   tasks:
-    - name: Update System Packages
-      apt:
-        upgrade: dist
-        update_cache: yes
-        cache_valid_time: 3600
-      register: system_update
-
     - name: Install Essential Packages
       apt:
         name: "{{ item }}"
@@ -48,30 +41,6 @@
       apt:
         name: google-chrome-stable
         state: present   
-
-    - name: Install Oh My Posh for Bash
-      command: >
-        bash -c "curl -fsSL https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/tools/install.sh | bash -s -- -t {{ oh_my_posh_theme_url }}"
-
-    - name: Install Zsh and Oh My Zsh
-      apt:
-        name: zsh
-        state: present
-
-    - name: Set Zsh as default shell
-      user:
-        name: "{{ ansible_env.USER }}"
-        shell: /bin/zsh
-
-    - name: Clone Oh My Zsh repository
-      git:
-        repo: "https://github.com/ohmyzsh/ohmyzsh.git"
-        dest: "$HOME/.oh-my-zsh"
-        clone: yes
-
-    - name: Install Oh My Posh for Zsh
-      command: >
-        bash -c "curl -fsSL https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/tools/install.sh | bash -s -- -t {{ oh_my_posh_theme_url }}"
 
     - name: Install VSCode
       snap:
