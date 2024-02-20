@@ -1,0 +1,113 @@
+- name: Setup Laptop Environment
+  hosts: localhost
+  become: yes
+  vars:
+    dotfiles_repo: "https://github.com/Privlak/Dotfiles.git"
+    dotfiles_dir: "~/dotfiles"
+    oh_my_posh_theme_url: "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/atomic.omp.json"
+    log_file: "~/setup_errors.log"
+
+  tasks:
+    - name: Update System Packages
+      apt:
+        upgrade: dist
+        update_cache: yes
+        cache_valid_time: 3600
+      register: system_update
+
+    - name: Install Essential Packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - neofetch
+        - htop
+        - bash
+        - fzf
+        - git
+        - python3
+        - libreoffice
+        - virtualbox
+        - vlc
+
+    - name: Add Google Chrome repository key
+      apt_key:
+        url: https://dl.google.com/linux/linux_signing_key.pub
+        state: present
+
+    - name: Add Google Chrome APT repository
+      apt_repository:
+        repo: deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
+        state: present
+
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+
+    - name: Install Google Chrome
+      apt:
+        name: google-chrome-stable
+        state: present   
+
+    - name: Install Oh My Posh for Bash
+      command: >
+        bash -c "curl -fsSL https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/tools/install.sh | bash -s -- -t {{ oh_my_posh_theme_url }}"
+
+    - name: Install Zsh and Oh My Zsh
+      apt:
+        name: zsh
+        state: present
+
+    - name: Set Zsh as default shell
+      user:
+        name: "{{ ansible_env.USER }}"
+        shell: /bin/zsh
+
+    - name: Clone Oh My Zsh repository
+      git:
+        repo: "https://github.com/ohmyzsh/ohmyzsh.git"
+        dest: "$HOME/.oh-my-zsh"
+        clone: yes
+
+    - name: Install Oh My Posh for Zsh
+      command: >
+        bash -c "curl -fsSL https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/tools/install.sh | bash -s -- -t {{ oh_my_posh_theme_url }}"
+
+    - name: Install VSCode
+      snap:
+        name: code
+        classic: yes
+        state: present
+      register: vscode_install
+
+    - name: Install Obsidian via Snap
+      community.general.snap:
+        name: obsidian
+        classic: yes
+      when: ansible_distribution == "Ubuntu"
+      register: obsidian_install
+
+    - name: Clone dotfiles Repository
+      git:
+        repo: "{{ dotfiles_repo }}"
+        dest: "{{ dotfiles_dir }}"
+        clone: yes
+      register: dotfiles_clone
+
+    - name: Copy Obsidian dotfiles
+      copy:
+        src: "{{ dotfiles_dir }}/Obsidian/.obsidian"
+        dest: "~/.obsidian"
+
+    - name: Copy VSCode dotfiles
+      copy:
+        src: "{{ dotfiles_dir }}/VSCode/settings.json"
+        dest: "$HOME/.config/Code/User/settings.json"
+
+    - name: Install VSCode extensions
+      command: "{{ item }}"
+      loop: "{{ lookup('file', dotfiles_dir + '/VSCode/VSCode_Extensions.txt').split('\n') }}"
+      args:
+        creates: "{{ item }}"
+      register: vscode_extensions_install
+      failed_when: vscode_extensions_install.rc != 0

@@ -1,0 +1,9 @@
+{
+    "notebook.output.textLineLimit": 1000,
+    "notebook.output.scrolling": true,
+    "explorer.confirmDelete": true,
+    "explorer.confirmDragAndDrop": false,
+    "editor.codeActionsOnSave": {},
+    "editor.fontFamily": "JetBrainsMono Nerd Font, Consolas, 'Courier New', monospace",
+    "editor.fontSize": 16
+}
