@@ -7,8 +7,7 @@ exec > >(tee -i "$LOG_FILE")
 exec 2>&1
 
 # Define script variables
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PLAYBOOK_FILE="$ROOT_DIR/dotfiles.yml"
+PLAYBOOK_FILE="/home/pavlak/dotfiles/Ansible/dotfiles.yml"
 
 # Check if Ansible is installed, if not, install it
 if ! command -v ansible &> /dev/null; then
@@ -18,7 +17,7 @@ if ! command -v ansible &> /dev/null; then
 fi
 
 # Run Ansible playbook with sudo privileges
-ansible-playbook dotfiles.yml --ask-become-pass
+ansible-playbook $PLAYBOOK_FILE --ask-become-pass
 
 echo "Setup completed successfully. Log file: $LOG_FILE"
 exit 0

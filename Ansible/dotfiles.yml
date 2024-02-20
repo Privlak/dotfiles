@@ -16,12 +16,12 @@
         - neofetch
         - htop
         - bash
-        - fzf
         - git
         - python3
         - libreoffice
         - virtualbox
         - vlc
+        - google-chrome-stable
 
     - name: Add Google Chrome repository key
       apt_key:
@@ -55,28 +55,3 @@
         classic: yes
       when: ansible_distribution == "Ubuntu"
       register: obsidian_install
-
-    - name: Clone dotfiles Repository
-      git:
-        repo: "{{ dotfiles_repo }}"
-        dest: "{{ dotfiles_dir }}"
-        clone: yes
-      register: dotfiles_clone
-
-    - name: Copy Obsidian dotfiles
-      copy:
-        src: "{{ dotfiles_dir }}/Obsidian/.obsidian"
-        dest: "~/.obsidian"
-
-    - name: Copy VSCode dotfiles
-      copy:
-        src: "{{ dotfiles_dir }}/VSCode/settings.json"
-        dest: "$HOME/.config/Code/User/settings.json"
-
-    - name: Install VSCode extensions
-      command: "{{ item }}"
-      loop: "{{ lookup('file', dotfiles_dir + '/VSCode/VSCode_Extensions.txt').split('\n') }}"
-      args:
-        creates: "{{ item }}"
-      register: vscode_extensions_install
-      failed_when: vscode_extensions_install.rc != 0
